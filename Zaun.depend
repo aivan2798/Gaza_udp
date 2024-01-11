@@ -1,0 +1,19 @@
+# depslib dependency file v1.0
+1704165750 source:d:\algoo\algocrafts\algoware\metal\zaun\zaun\main.cpp
+	<iostream>
+	"Zaun.h"
+
+1704856388 d:\algoo\algocrafts\algoware\metal\zaun\zaun\zaun.h
+	<winsock.h>
+	<vector>
+	<map>
+	"zaun_structs.h"
+	<chrono>
+	<atomic>
+	<future>
+
+1704855414 d:\algoo\algocrafts\algoware\metal\zaun\zaun\zaun_structs.h
+	<vector>
+	<deque>
+	<map>
+
