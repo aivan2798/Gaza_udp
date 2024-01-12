@@ -9,6 +9,7 @@
 #include<vector>
 #include<map>
 #include "zaun_structs.h"
+#include "gaza_constants.h"
 #include <chrono>
 #include <atomic>
 #include <future>
@@ -21,12 +22,33 @@ class Zaun
     ZaunParams zaun_params;
     deque<int> &active_sockets = zaun_params.active_sockets;
     int open_portal = 0;
-    public:
-    Zaun(char *zion_addr,int zion_addr_len)
-    {
-        //--causes program to crash after pushing to stack memset(&zaun_params,0,sizeof(zaun_params));
-        memcpy(zaun_params.zion_addr,zion_addr,zion_addr_len);
 
+    int rtimeout = 5 * 1000;
+    timeval read_timeout;
+    
+    //index to track used and unused sockaddr structures from the active_addr structure
+    int active_addr_index = 0;
+    public:
+    Zaun(char *zion_addr,int zion_addr_len, uint16_t *ports_list,int ports_count)
+    {
+        memset(&read_timeout,0,sizeof(read_timeout));
+        read_timeout.tv_sec = 5;
+        read_timeout.tv_usec = 0;
+
+        //--causes program to crash after pushing to stack memset(&zaun_params,0,sizeof(zaun_params));
+        memset(zaun_params.zion_addr,0,sizeof(zion_addr));
+        memcpy(zaun_params.zion_addr,zion_addr,zion_addr_len);
+        zaun_params.active_ports.assign(ports_list,ports_list+(ports_count));
+
+        /*
+        Test point: TEST ACTIVE_PORTS VECTOR
+        cout<<endl<<"<--Using Ports: ";
+        for (int port_now : (zaun_params.active_ports))
+        {
+            cout<<port_now<<" ";
+        }
+        */
+        
         cout<<endl<<"\t\tObtaining port to: "<<zaun_params.zion_addr<<"\t--|__"<<endl;
         init();
     }
@@ -53,22 +75,29 @@ class Zaun
         cout.flush();
 
         //socket initialised
-        int open_sock = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
+        
 
-        //check socket creation
-        if(open_sock<=0)
+        for (uint16_t port_now : (zaun_params.active_ports))
         {
-            cout<<endl<<"\t\tSocket creation failed"<<endl;
-            cout.flush();
-            exit(0);
-        }
+            //cout<<port_now<<" ";
+            sockaddr_in *open_addr = new sockaddr_in;
+            memset(open_addr,0,sizeof(*open_addr));
+            
+            open_addr->sin_family = AF_INET;
+            open_addr->sin_port = htons(port_now);
+            open_addr->sin_addr.s_addr = inet_addr(zaun_params.zion_addr);
 
-        addSocket(open_sock);
+            zaun_params.active_addrs.push_back(open_addr);
+
+        }
+        
+
+        int open_sock = makePortal();
         setActivePortal(open_sock);
         cout<<endl<<"\t\tsocket initializing complete: 100%";
         cout.flush();
-
-        findSt();
+        initCRTunnel();
+        //findSt();
     }
     void addSocket(int open_sock)
     {
@@ -82,7 +111,93 @@ class Zaun
 
     }
 
+    //create socket, pick unused sockaddr from active_addr and make a sock active_addr pair
+    int makePortal()
+    {
+        int open_sock = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
+        //check socket creation
+        if(open_sock<=0)
+        {
+            cout<<endl<<"\t\tSocket creation failed"<<endl;
+            cout.flush();
+            exit(0);
+        }
+
+        addSocket(open_sock);
+        sockaddr_in *this_sin = zaun_params.active_addrs[active_addr_index];
+
+        zaun_params.socket_portal_map[open_sock] = this_sin;
+
+        return open_sock;
+    }
+
     //find how long the socket takes to start
+    void initPortal()
+    {
+        //sendto(open_portal,)
+    }
+
+    bool initCRTunnel()
+    {
+        float time_span = 0.0;
+        uint8_t raw_datum[5];
+        memset(raw_datum,0,(sizeof(raw_datum)));
+        cout<<"\t raw datum size: "<<sizeof(raw_datum)<<endl;
+        cout.flush();
+   
+        setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,&read_timeout,sizeof(read_timeout));
+        //setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,(char*)&rtimeout,sizeof(rtimeout));
+        float time_after ;
+        atomic_bool start_animation;
+        start_animation.store(false);
+        char *msg = "\n\t\tInitialising Connection: ";
+
+        future<void> load_animation = startAnimation(msg,500,start_animation,'=');
+
+        //cout<<endl<<"using portal: "<<open_portal<<endl;
+        //cout.flush();
+        //startAnimation(msg,500,start_animation,'=');
+
+        sockaddr recv_addr;
+        memset(&recv_addr,0,sizeof(recv_addr));
+        socklen_t recv_addr_len = sizeof(recv_addr);
+        
+        while(true)
+        {       
+                int xport_weight = sendto(open_portal,CR_INIT_CMD_HEAD,sizeof(CR_INIT_CMD_HEAD),0,(sockaddr*)zaun_params.socket_portal_map[open_portal],sizeof(*zaun_params.socket_portal_map[open_portal]));
+
+                float time_now = time(nullptr);
+                
+
+                int inport_size = recvfrom(open_portal,raw_datum,sizeof(raw_datum),0,&recv_addr,&recv_addr_len);
+
+                
+                if(inport_size>0)
+                {
+                    float time_after = time(nullptr);
+                    float duration = (time_after-time_now);
+                    start_animation.store(true);
+                    time_span = duration;
+                    cout<<endl<<"\t\tPath Finder Complete with: "<<time_span<<endl;
+                    /*cout<<endl<<"dsize: "<<inport_size<<" raw init data: "<<(char*)raw_datum<<endl;*/
+                    break;
+                }
+               // }
+       //killman_lock.unlock();
+                
+               cout<<"\n\t\tPREMATURE BREAK"<<endl;
+               cout.flush();
+               break;
+        }
+
+        start_animation.store(true);
+        //
+                
+
+   return true;
+
+ }
+
     void findSt()
     {
         time_t time_struct;
@@ -118,9 +233,11 @@ class Zaun
         //cout<<endl<<time_now<<endl<<"\t duration: "<<duration;
     }
 
+
+
     future<void> startAnimation(char *msg,int speed,atomic_bool &trigger,char icon)
     {
-        return async(Zaun::animate,msg,speed,ref(trigger),icon);
+        return async(launch::async,animate,msg,speed,ref(trigger),icon);
     }
 
     static void animate(char *msg,int speed,atomic_bool &trigger,char icon)

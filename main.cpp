@@ -1,11 +1,14 @@
 #include<iostream>
 #include "Zaun.h"
+#include "Zion.h"
 
 using namespace std;
 int main(int argv, char **argc)
 {
     
     char portal_code;
+    int start_port;
+    int end_port;
     if (argv<=1)
     {
         
@@ -53,8 +56,36 @@ int main(int argv, char **argc)
         char zion_addr[20];
         cout<<endl<<"-->Enter Zion Address: ";
         cin>>zion_addr;
-        cout<<endl<<"<--Runners finding safe route to: "<<zion_addr<<endl;
-        Zaun zaun(zion_addr,sizeof(zion_addr));
+        cout<<endl<<"-->Enter Start Port[ 1- 65535]: ";
+        START_PORT:
+        cin>>start_port;
+        if((start_port>65535)||(start_port<1))
+        {
+            cout<<endl<<"-->Please enter a valid Port [ 1- 65535]: ";
+            goto START_PORT;
+        }
+        cout<<endl<<"-->Enter End Port[ 1- 65535]: ";
+        END_PORT:
+        cin>>end_port;
+        if((end_port>65535)||(end_port<0))
+        {
+            cout<<endl<<"-->Please enter a valid Port [ 1- 65535]: ";
+            goto END_PORT;
+        }
+        cout<<endl<<"<--Runners finding safe route to: "<<zion_addr<<" on "<<start_port<<" and "<<end_port<<endl;
+        uint16_t ports_list[65535];
+        memset(ports_list,0,sizeof(ports_list));
+        int ports_list_index = 0;
+        
+        for(uint16_t x_port=(start_port-1);x_port<end_port;x_port++)
+        {
+            ports_list[ports_list_index] = (x_port+1);
+            cout<<ports_list[ports_list_index]<<" ";
+            ports_list_index++;
+            
+        }
+        cout<<endl<<"Total number of ports: "<<ports_list_index<<endl;
+        Zaun zaun(zion_addr,sizeof(zion_addr),ports_list,ports_list_index);
     }
     else if(portal_code=='2')
     {
@@ -67,6 +98,7 @@ int main(int argv, char **argc)
         cout<<endl<<"-->Enter Main Port: ";
         cin>>zion_main_port;
         cout<<endl<<"<--Receiving on safe port: "<<zion_main_port<<endl;
+        Zion zion(zion_main_port);
     }
     else
     {

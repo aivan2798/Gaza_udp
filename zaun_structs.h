@@ -5,6 +5,8 @@
 
 #endif // ZAUN_STRUCTS_H_INCLUDED
 #include<vector>
+#include<sys/socket.h>
+#include<arpa/inet.h>
 #include<deque>
 #include<map>
 
@@ -18,8 +20,19 @@ struct ZaunParams
     int Pc = 0;//Packet counter...shows the batch item in which to start a new connection
     int Rc = 0;//R count
     int Tc = 0;//T count
+    sockaddr_in portal_addr;
 
+
+    deque<sockaddr_in*> active_addrs;
     deque<int> active_sockets; //list of created sockets that have not yet expired
+    vector<uint16_t> active_ports; //list of zion ports that can be connected to
+    map<int,sockaddr_in*> socket_portal_map;
     map<double,int> time_batch_index;//map of duration and batch index...used when finding the Pc to use that gives the least time.
+
+};
+
+struct zionParams
+{
+    int main_portal;
 
 };
