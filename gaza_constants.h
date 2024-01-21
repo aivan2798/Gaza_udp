@@ -1,3 +1,4 @@
+#pragma once
 #ifndef BABYLON_CONSTANTS_H_INCLUDED
 #define BABYLON_CONSTANTS_H_INCLUDED
 

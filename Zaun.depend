@@ -3,6 +3,8 @@
 	<iostream>
 	"Zaun.h"
 
+1704855414 
+
 1704856388 d:\algoo\algocrafts\algoware\metal\zaun\zaun\zaun.h
 	<winsock.h>
 	<vector>
@@ -16,4 +18,40 @@
 	<vector>
 	<deque>
 	<map>
+
+1705036410 source:/home/aivan/codebox/codespaces/workspaces/baremetal/zaun++/main.cpp
+	<iostream>
+	"Zaun.h"
+	"Zion.h"
+
+1705841858 /home/aivan/codebox/codespaces/workspaces/baremetal/zaun++/Zaun.h
+	<sys/socket.h>
+	<arpa/inet.h>
+	<vector>
+	<map>
+	"zaun_structs.h"
+	"gaza_constants.h"
+	<chrono>
+	<atomic>
+	<future>
+	<cstring>
+	<unistd.h>
+
+1705036446 /home/aivan/codebox/codespaces/workspaces/baremetal/zaun++/zaun_structs.h
+	<vector>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<deque>
+	<map>
+
+1705110811 /home/aivan/codebox/codespaces/workspaces/baremetal/zaun++/gaza_constants.h
+	<stdint.h>
+
+1705112529 /home/aivan/codebox/codespaces/workspaces/baremetal/zaun++/Zion.h
+	<iostream>
+	<cstdint>
+	<sys/socket.h>
+	<arpa/inet.h>
+	<cstring>
+	"gaza_constants.h"
 

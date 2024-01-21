@@ -25,14 +25,14 @@ class Zaun
 
     int rtimeout = 5 * 1000;
     timeval read_timeout;
-    
+
     //index to track used and unused sockaddr structures from the active_addr structure
     int active_addr_index = 0;
     public:
     Zaun(char *zion_addr,int zion_addr_len, uint16_t *ports_list,int ports_count)
     {
         memset(&read_timeout,0,sizeof(read_timeout));
-        read_timeout.tv_sec = 5;
+        read_timeout.tv_sec = 60;
         read_timeout.tv_usec = 0;
 
         //--causes program to crash after pushing to stack memset(&zaun_params,0,sizeof(zaun_params));
@@ -48,7 +48,7 @@ class Zaun
             cout<<port_now<<" ";
         }
         */
-        
+
         cout<<endl<<"\t\tObtaining port to: "<<zaun_params.zion_addr<<"\t--|__"<<endl;
         init();
     }
@@ -75,14 +75,14 @@ class Zaun
         cout.flush();
 
         //socket initialised
-        
+
 
         for (uint16_t port_now : (zaun_params.active_ports))
         {
             //cout<<port_now<<" ";
             sockaddr_in *open_addr = new sockaddr_in;
             memset(open_addr,0,sizeof(*open_addr));
-            
+
             open_addr->sin_family = AF_INET;
             open_addr->sin_port = htons(port_now);
             open_addr->sin_addr.s_addr = inet_addr(zaun_params.zion_addr);
@@ -90,7 +90,7 @@ class Zaun
             zaun_params.active_addrs.push_back(open_addr);
 
         }
-        
+
 
         int open_sock = makePortal();
         setActivePortal(open_sock);
@@ -144,7 +144,7 @@ class Zaun
         memset(raw_datum,0,(sizeof(raw_datum)));
         cout<<"\t raw datum size: "<<sizeof(raw_datum)<<endl;
         cout.flush();
-   
+
         setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,&read_timeout,sizeof(read_timeout));
         //setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,(char*)&rtimeout,sizeof(rtimeout));
         float time_after ;
@@ -152,7 +152,7 @@ class Zaun
         start_animation.store(false);
         char *msg = "\n\t\tInitialising Connection: ";
 
-        future<void> load_animation = startAnimation(msg,500,start_animation,'=');
+        //future<void> load_animation = startAnimation(msg,500,start_animation,'=');
 
         //cout<<endl<<"using portal: "<<open_portal<<endl;
         //cout.flush();
@@ -161,21 +161,22 @@ class Zaun
         sockaddr recv_addr;
         memset(&recv_addr,0,sizeof(recv_addr));
         socklen_t recv_addr_len = sizeof(recv_addr);
-        
+
         while(true)
-        {       
+        {
                 int xport_weight = sendto(open_portal,CR_INIT_CMD_HEAD,sizeof(CR_INIT_CMD_HEAD),0,(sockaddr*)zaun_params.socket_portal_map[open_portal],sizeof(*zaun_params.socket_portal_map[open_portal]));
 
-                float time_now = time(nullptr);
-                
+                long time_now = time(nullptr);
+                cout<<endl<<"\t\tInitial time: "<<time_now<<endl;
 
                 int inport_size = recvfrom(open_portal,raw_datum,sizeof(raw_datum),0,&recv_addr,&recv_addr_len);
 
-                
+
                 if(inport_size>0)
                 {
-                    float time_after = time(nullptr);
-                    float duration = (time_after-time_now);
+                    long time_after = time(nullptr);
+                    cout<<endl<<"\t\tafter time: "<<time_after<<endl;
+                    long duration = (time_after-time_now);
                     start_animation.store(true);
                     time_span = duration;
                     cout<<endl<<"\t\tPath Finder Complete with: "<<time_span<<endl;
@@ -184,7 +185,7 @@ class Zaun
                 }
                // }
        //killman_lock.unlock();
-                
+
                cout<<"\n\t\tPREMATURE BREAK"<<endl;
                cout.flush();
                break;
@@ -192,11 +193,73 @@ class Zaun
 
         start_animation.store(true);
         //
-                
+
 
    return true;
 
  }
+
+    void io_time_test()
+    {
+        float time_span = 0.0;
+        uint8_t raw_datum[5];
+        memset(raw_datum,0,(sizeof(raw_datum)));
+        cout<<"\t raw datum size: "<<sizeof(raw_datum)<<endl;
+        cout.flush();
+
+        //setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,&read_timeout,sizeof(read_timeout));
+        //setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,(char*)&rtimeout,sizeof(rtimeout));
+        float time_after ;
+        atomic_bool start_animation;
+        start_animation.store(false);
+        char *msg = "\n\t\tInitialising Connection: ";
+
+        //future<void> load_animation = startAnimation(msg,500,start_animation,'=');
+
+        //cout<<endl<<"using portal: "<<open_portal<<endl;
+        //cout.flush();
+        //startAnimation(msg,500,start_animation,'=');
+
+        sockaddr recv_addr;
+        memset(&recv_addr,0,sizeof(recv_addr));
+        socklen_t recv_addr_len = sizeof(recv_addr);
+
+        while(true)
+        {
+                int xport_weight = sendto(open_portal,CR_INIT_CMD_HEAD,sizeof(CR_INIT_CMD_HEAD),0,(sockaddr*)zaun_params.socket_portal_map[open_portal],sizeof(*zaun_params.socket_portal_map[open_portal]));
+
+                long time_now = time(nullptr);
+                cout<<endl<<"\t\tInitial time: "<<time_now<<endl;
+
+                int inport_size = recvfrom(open_portal,raw_datum,sizeof(raw_datum),0,&recv_addr,&recv_addr_len);
+
+
+                if(inport_size>0)
+                {
+                    long time_after = time(nullptr);
+                    cout<<endl<<"\t\tafter time: "<<time_after<<endl;
+                    long duration = (time_after-time_now);
+                    start_animation.store(true);
+                    time_span = duration;
+                    cout<<endl<<"\t\tPath Finder Complete with: "<<time_span<<endl;
+                    /*cout<<endl<<"dsize: "<<inport_size<<" raw init data: "<<(char*)raw_datum<<endl;*/
+                    break;
+                }
+               // }
+       //killman_lock.unlock();
+
+               cout<<"\n\t\tPREMATURE BREAK"<<endl;
+               cout.flush();
+               break;
+        }
+
+        start_animation.store(true);
+        //
+
+
+   return true;
+        
+    }
 
     void findSt()
     {
