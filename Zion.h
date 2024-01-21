@@ -70,14 +70,24 @@ class Zion
         {
             sockaddr_in new_zaunist;
             socklen_t new_zaunist_len = sizeof(new_zaunist);
-            int recv_bytes = recvfrom(zion_portal,main_inports_buffer,main_inports_buffer_len,0,(sockaddr*)&new_zaunist,&new_zaunist_len);
-            LoadStruct *tmp_load = new LoadStruct;
-            tmp_load->zaun_addr = new_zaunist;
-            tmp_load->zaun_addr_len = new_zaunist_len;
-            tmp_load->zaun_load_len = recv_bytes;
-            memcpy(tmp_load->zaun_load_data,main_inports_buffer,recv_bytes);
 
-            addLoad(tmp_load);
+            while(true)
+            {
+                memset(main_inports_buffer,0,main_inports_buffer_len);
+                memset(&new_zaunist,0,sizeof(new_zaunist));
+                new_zaunist_len = sizeof(new_zaunist);
+                int recv_bytes = recvfrom(zion_portal,main_inports_buffer,main_inports_buffer_len,0,(sockaddr*)&new_zaunist,&new_zaunist_len);
+                if(recv_bytes>0)
+                {
+                    LoadStruct *tmp_load = new LoadStruct;
+                    tmp_load->zaun_addr = new_zaunist;
+                    tmp_load->zaun_addr_len = new_zaunist_len;
+                    tmp_load->zaun_load_len = recv_bytes;
+                    memcpy(tmp_load->zaun_load_data,main_inports_buffer,recv_bytes);
+
+                    addLoad(tmp_load);
+                }
+            }
             //routeCaptain(new_zaunist,new_zaunist_len);
         }
 
