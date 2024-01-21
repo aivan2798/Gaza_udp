@@ -24,7 +24,8 @@ struct ZaunParams
 
 
     deque<sockaddr_in*> active_addrs;
-    deque<int> active_sockets; //list of created sockets that have not yet expired
+    deque<int> active_tx_sockets; //list of created send sockets that have not yet expired
+    deque<int> active_rx_sockets; //list of created recieve sockets that have not yet expired
     vector<uint16_t> active_ports; //list of zion ports that can be connected to
     map<int,sockaddr_in*> socket_portal_map;
     map<double,int> time_batch_index;//map of duration and batch index...used when finding the Pc to use that gives the least time.

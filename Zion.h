@@ -114,6 +114,11 @@ class Zion
                 cout<<endl<<"CR_INIT_HEAD"<<endl;
                 sendto(this_zion_portal,CR_INIT_CMD_FIN,sizeof(CR_INIT_CMD_FIN),0,(sockaddr*)&new_zaunist,new_zaunist_len);
             }
+            else if( (memcmp(route_id,CT_INIT_CMD_HEAD,4)==0))
+            {
+                cout<<endl<<"CR_INIT_HEAD"<<endl;
+                sendto(this_zion_portal,CT_INIT_CMD_FIN,sizeof(CT_INIT_CMD_FIN),0,(sockaddr*)&new_zaunist,new_zaunist_len);
+            }
             
         }
 
