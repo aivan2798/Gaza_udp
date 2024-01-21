@@ -175,7 +175,7 @@ class Zaun
                 if(inport_size>0)
                 {
                     long time_after = time(nullptr);
-                    cout<<endl<<"\t\tafter time: "<<time_after<<endl;
+                    cout<<endl<<"\t\tsignal received at: "<<time_after<<endl;
                     long duration = (time_after-time_now);
                     start_animation.store(true);
                     time_span = duration;
