@@ -199,7 +199,7 @@ class Zaun
 
  }
 
-    void io_time_test()
+    bool io_time_test()
     {
         float time_span = 0.0;
         uint8_t raw_datum[5];
@@ -257,7 +257,7 @@ class Zaun
         //
 
 
-   return true;
+        return true;
         
     }
 

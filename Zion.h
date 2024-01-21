@@ -4,10 +4,12 @@
 #include<arpa/inet.h>
 #include<cstring>
 #include<future>
+#include<deque>
 #include "gaza_structs.h"
 //#include "gaza_constants.h"
 
 using namespace std;
+static atomic_bool main_captain_killer;
 class Zion
 {
     int zion_portal = 0;
@@ -20,7 +22,7 @@ class Zion
     mutex load_structs_lock;
     //this is the connection handler
     future<void> port_handler;
-    static atomic_bool main_captain_killer;
+    
     public:
         Zion(int16_t zion_port)
         {
