@@ -25,7 +25,10 @@
 
  uint8_t RRESET_HEAD[4] = {11,'x','x',11};
  uint8_t RRESET_TAIL[4] = {99,'x','x',99};
-
+ 
+ uint8_t HELLO_HEAD[4] = {66,'X','X',66};
+ uint8_t HELLO_TAIL[4] = {66,'x','x',66};
+ 
  const int MAX_RCOUNT = 50;
 
  const uint32_t DEFAULT_MTU = 1500;

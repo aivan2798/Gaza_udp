@@ -93,7 +93,9 @@ class Zaun
         }
 
         initCRTunnel();
-        initCRTunnel();
+        initCTTunnel();
+
+        initHello();
         //findSt();
     }
     void addTxSocket(int open_sock)
@@ -134,6 +136,12 @@ class Zaun
         return open_sock;
     }
 
+    uint64_t epochMillisec() 
+    {
+        
+        return chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count();
+    }
+
     int makeRxPortal()
     {
         int open_sock = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
@@ -163,7 +171,7 @@ class Zaun
     {
         int open_sock = makeRxPortal();
        // setActivePortal(open_sock);
-        cout<<endl<<"\t\tsocket initializing complete: 100%";
+        cout<<endl<<"\t\tcr socket initializing complete: 100%";
         cout.flush();
 
         float time_span = 0.0;
@@ -193,7 +201,7 @@ class Zaun
         {
                 int xport_weight = sendto(open_sock,CR_INIT_CMD_HEAD,sizeof(CR_INIT_CMD_HEAD),0,(sockaddr*)zaun_params.socket_portal_map[open_sock],sizeof(*zaun_params.socket_portal_map[open_sock]));
 
-                long time_now = time(nullptr);
+                long time_now = epochMillisec();
                 cout<<endl<<"\t\tInitial time: "<<time_now<<endl;
 
                 int inport_size = recvfrom(open_sock,raw_datum,sizeof(raw_datum),0,&recv_addr,&recv_addr_len);
@@ -201,7 +209,7 @@ class Zaun
 
                 if(inport_size>0)
                 {
-                    long time_after = time(nullptr);
+                    long time_after = epochMillisec();
                     cout<<endl<<"\t\tsignal received at: "<<time_after<<endl;
                     long duration = (time_after-time_now);
                     start_animation.store(true);
@@ -226,11 +234,89 @@ class Zaun
 
  }
 
+    int getRxSock()
+    {
+        return active_rx_sockets.back();
+    }
+
+    int getTxSock()
+    {
+        return active_tx_sockets.back();
+    }
+
+    bool initHello()
+    {
+        
+        int open_sock = getTxSock();
+       // setActivePortal(open_sock);
+        cout<<endl<<endl<<endl<<"\t\tcr initializing hello: 100%";
+        cout.flush();
+
+        float time_span = 0.0;
+        uint8_t raw_datum[5];
+        memset(raw_datum,0,(sizeof(raw_datum)));
+        cout<<"\t raw datum size: "<<sizeof(raw_datum)<<endl;
+        cout.flush();
+
+        //setsockopt(open_sock,SOL_SOCKET,SO_RCVTIMEO,&read_timeout,sizeof(read_timeout));
+        //setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,(char*)&rtimeout,sizeof(rtimeout));
+        float time_after ;
+        atomic_bool start_animation;
+        start_animation.store(false);
+        char *msg = "\n\t\tInitialising hello Connection: ";
+
+        //future<void> load_animation = startAnimation(msg,500,start_animation,'=');
+
+        //cout<<endl<<"using portal: "<<open_portal<<endl;
+        //cout.flush();
+        //startAnimation(msg,500,start_animation,'=');
+
+        sockaddr recv_addr;
+        memset(&recv_addr,0,sizeof(recv_addr));
+        socklen_t recv_addr_len = sizeof(recv_addr);
+
+        while(true)
+        {
+                int xport_weight = sendto(open_sock,HELLO_HEAD,sizeof(HELLO_HEAD),0,(sockaddr*)zaun_params.socket_portal_map[open_sock],sizeof(*zaun_params.socket_portal_map[open_sock]));
+
+                long time_now = epochMillisec();
+                cout<<endl<<"\t\thello Initial time: "<<time_now<<endl;
+
+                int inport_size = recvfrom(open_sock,raw_datum,sizeof(raw_datum),0,&recv_addr,&recv_addr_len);
+
+
+                if(inport_size>0)
+                {
+                    long time_after = epochMillisec();
+                    cout<<endl<<"\t\t hello signal received at: "<<time_after<<endl;
+                    long duration = (time_after-time_now);
+                    start_animation.store(true);
+                    time_span = duration;
+                    cout<<endl<<"\t\tHello Path Finder Complete with: "<<time_span<<endl;
+                    /*cout<<endl<<"dsize: "<<inport_size<<" raw init data: "<<(char*)raw_datum<<endl;*/
+                    break;
+                }
+               // }
+       //killman_lock.unlock();
+
+               cout<<"\n\t\tPREMATURE BREAK"<<endl;
+               cout.flush();
+               break;
+        }
+
+        start_animation.store(true);
+        //
+
+
+   return true;
+
+ }
+
  bool initCTTunnel()
     {
         int open_sock = makeTxPortal();
         setActivePortal(open_sock);
-        cout<<endl<<"\t\tsocket initializing complete: 100%";
+        cout<<endl<<"\t\tCT socket initializing complete: 100%";
         cout.flush();
 
         float time_span = 0.0;
@@ -260,7 +346,7 @@ class Zaun
         {
                 int xport_weight = sendto(open_sock,CT_INIT_CMD_HEAD,sizeof(CT_INIT_CMD_HEAD),0,(sockaddr*)zaun_params.socket_portal_map[open_sock],sizeof(*zaun_params.socket_portal_map[open_sock]));
 
-                long time_now = time(nullptr);
+                long time_now = epochMillisec();
                 cout<<endl<<"\t\tInitial time: "<<time_now<<endl;
 
                 int inport_size = recvfrom(open_sock,raw_datum,sizeof(raw_datum),0,&recv_addr,&recv_addr_len);
@@ -268,7 +354,7 @@ class Zaun
 
                 if(inport_size>0)
                 {
-                    long time_after = time(nullptr);
+                    long time_after = epochMillisec();
                     cout<<endl<<"\t\tsignal received at: "<<time_after<<endl;
                     long duration = (time_after-time_now);
                     start_animation.store(true);
