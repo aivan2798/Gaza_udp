@@ -172,7 +172,7 @@ class Zaun
         cout<<"\t raw datum size: "<<sizeof(raw_datum)<<endl;
         cout.flush();
 
-        setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,&read_timeout,sizeof(read_timeout));
+        setsockopt(open_sock,SOL_SOCKET,SO_RCVTIMEO,&read_timeout,sizeof(read_timeout));
         //setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,(char*)&rtimeout,sizeof(rtimeout));
         float time_after ;
         atomic_bool start_animation;
@@ -191,12 +191,12 @@ class Zaun
 
         while(true)
         {
-                int xport_weight = sendto(open_portal,CR_INIT_CMD_HEAD,sizeof(CR_INIT_CMD_HEAD),0,(sockaddr*)zaun_params.socket_portal_map[open_portal],sizeof(*zaun_params.socket_portal_map[open_portal]));
+                int xport_weight = sendto(open_sock,CR_INIT_CMD_HEAD,sizeof(CR_INIT_CMD_HEAD),0,(sockaddr*)zaun_params.socket_portal_map[open_sock],sizeof(*zaun_params.socket_portal_map[open_sock]));
 
                 long time_now = time(nullptr);
                 cout<<endl<<"\t\tInitial time: "<<time_now<<endl;
 
-                int inport_size = recvfrom(open_portal,raw_datum,sizeof(raw_datum),0,&recv_addr,&recv_addr_len);
+                int inport_size = recvfrom(open_sock,raw_datum,sizeof(raw_datum),0,&recv_addr,&recv_addr_len);
 
 
                 if(inport_size>0)
@@ -239,7 +239,7 @@ class Zaun
         cout<<"\t raw datum size: "<<sizeof(raw_datum)<<endl;
         cout.flush();
 
-        setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,&read_timeout,sizeof(read_timeout));
+        setsockopt(open_sock,SOL_SOCKET,SO_RCVTIMEO,&read_timeout,sizeof(read_timeout));
         //setsockopt(open_portal,SOL_SOCKET,SO_RCVTIMEO,(char*)&rtimeout,sizeof(rtimeout));
         float time_after ;
         atomic_bool start_animation;
@@ -258,12 +258,12 @@ class Zaun
 
         while(true)
         {
-                int xport_weight = sendto(open_portal,CT_INIT_CMD_HEAD,sizeof(CT_INIT_CMD_HEAD),0,(sockaddr*)zaun_params.socket_portal_map[open_portal],sizeof(*zaun_params.socket_portal_map[open_portal]));
+                int xport_weight = sendto(open_sock,CT_INIT_CMD_HEAD,sizeof(CT_INIT_CMD_HEAD),0,(sockaddr*)zaun_params.socket_portal_map[open_sock],sizeof(*zaun_params.socket_portal_map[open_sock]));
 
                 long time_now = time(nullptr);
                 cout<<endl<<"\t\tInitial time: "<<time_now<<endl;
 
-                int inport_size = recvfrom(open_portal,raw_datum,sizeof(raw_datum),0,&recv_addr,&recv_addr_len);
+                int inport_size = recvfrom(open_sock,raw_datum,sizeof(raw_datum),0,&recv_addr,&recv_addr_len);
 
 
                 if(inport_size>0)
