@@ -119,7 +119,11 @@ class Zion
                 cout<<endl<<"CT_INIT_HEAD"<<endl;
                 sendto(this_zion_portal,CT_INIT_CMD_FIN,sizeof(CT_INIT_CMD_FIN),0,(sockaddr*)&new_zaunist,new_zaunist_len);
             }
-            
+            else
+            {
+                cout<<endl<<"data"<<endl;
+                cout.flush();
+            }
         }
 
         static void mainCaptain(int zion_portalx,deque<LoadStruct*> &main_load,mutex &main_load_lock)
