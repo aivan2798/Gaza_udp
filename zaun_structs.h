@@ -1,3 +1,4 @@
+#pragma once
 #ifndef ZAUN_STRUCTS_H_INCLUDED
 #define ZAUN_STRUCTS_H_INCLUDED
 
@@ -20,7 +21,7 @@ struct ZaunParams
     int Pc = 0;//Packet counter...shows the batch item in which to start a new connection
     int Rc = 0;//R count
     int Tc = 0;//T count
-    sockaddr_in portal_addr;
+    sockaddr_in portal_addr; //endpoint addr
 
 
     deque<sockaddr_in*> active_addrs;

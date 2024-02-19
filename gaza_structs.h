@@ -1,4 +1,4 @@
-
+#pragma once
 #include<arpa/inet.h>
 #include<sys/socket.h>
 #include "gaza_constants.h"
@@ -9,5 +9,6 @@ struct LoadStruct
     sockaddr_in zaun_addr;
     socklen_t zaun_addr_len;
     uint8_t zaun_load_data[DEFAULT_MTU];
+    uint8_t *zaun_data;
     int zaun_load_len;
 };

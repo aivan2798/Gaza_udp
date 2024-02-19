@@ -1,6 +1,8 @@
 #include<iostream>
 #include "Zaun.h"
 #include "Zion.h"
+#include "Zionx.h"
+#include "Zaunx.h"
 
 using namespace std;
 int main(int argv, char **argc)
@@ -85,7 +87,8 @@ int main(int argv, char **argc)
             
         }
         cout<<endl<<"Total number of ports: "<<ports_list_index<<endl;
-        Zaun zaun(zion_addr,sizeof(zion_addr),ports_list,ports_list_index);
+       // Zaun zaun(zion_addr,sizeof(zion_addr),ports_list,ports_list_index);
+        Zaunx zaunx(zion_addr,sizeof(zion_addr),8055);
     }
     else if(portal_code=='2')
     {
@@ -98,7 +101,7 @@ int main(int argv, char **argc)
         cout<<endl<<"-->Enter Main Port: ";
         cin>>zion_main_port;
         cout<<endl<<"<--Receiving on safe port: "<<zion_main_port<<endl;
-        Zion zion(zion_main_port);
+        Zionx zion(zion_main_port);
     }
     else
     {
